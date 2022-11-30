@@ -36,7 +36,7 @@ export default function Menu({navigation}) {
         <Image style={styles.imgBtn} source={require("../assets/btn-5.png")}/>
         <Text style={styles.textBtn5}>MEU PERFIL</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.button6}>
+      <TouchableOpacity style={styles.button6} onPress={() => navigation.navigate("EncostAi - Receber SMS")}>
         <Image style={styles.imgBtn} source={require("../assets/btn-6.png")}/>
         <Text style={styles.textBtn6}>RECEBER SMS</Text>
       </TouchableOpacity>

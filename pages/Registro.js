@@ -52,8 +52,7 @@ export default function Registro({navigation}) {
       />
       <TouchableOpacity
         style={styles.registerScreenButton}
-        onPress={() => Alert.alert('Criar página de Menu')}
-        // onPress={() => navigate('Menu')}
+        onPress={() => navigation.navigate('EncostAi - Menu')}
         underlayColor='#fff'>
         <Text style={styles.registerText}>CRIAR CONTA</Text>
       </TouchableOpacity>
@@ -92,6 +91,7 @@ const styles = StyleSheet.create({
     borderRadius:10,
     padding: 10,
     backgroundColor: 'rgba(142,142,147,0.22)',
+    fontSize: 16,
   },
   registerScreenButton:{
     marginRight:40,

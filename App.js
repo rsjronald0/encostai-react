@@ -9,6 +9,8 @@ import Abrigos from './pages/Abrigos.js';
 import Senha from './pages/Senha.js';
 import Codigo from './pages/Codigo.js';
 import Risco from './pages/Risco.js';
+import SMS from './pages/SMS.js';
+import NovoSMS from './pages/NovoSMS.js';
 
 const Stack = createStackNavigator();
 
@@ -24,6 +26,8 @@ export default function App() {
       <Stack.Screen name='EncostAi - Contatos' component={Contatos}/>
       <Stack.Screen name='EncostAi - Pontos de Risco' component={Risco}/>
       <Stack.Screen name='EncostAi - Abrigos' component={Abrigos}/>
+      <Stack.Screen name='EncostAi - Receber SMS' component={SMS}/>
+      <Stack.Screen name='EncostAi - Novo SMS' component={NovoSMS}/>
     </Stack.Navigator>
   </NavigationContainer>
   );
