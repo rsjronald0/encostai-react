@@ -1,5 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Image, TextInput, Button, TouchableOpacity, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 const Separator = () => (
   <View style={styles.separator} />
@@ -7,10 +8,7 @@ const Separator = () => (
 
 export default function Index({navigation}) {
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "padding"}
-      style={styles.kview}
-    >
+    <KeyboardAwareScrollView contentContainerStyle={{flex: 1}}>
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
       <Image
@@ -52,14 +50,11 @@ export default function Index({navigation}) {
       <StatusBar style="auto" />
       </View>
     </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
+    </KeyboardAwareScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  kview: {
-    flex: 1,
-  },
   container: {
     flex: 1,
     backgroundColor: '#fff',

@@ -8,7 +8,7 @@ const Separator = () => (
 export default function Codigo({navigation}) {
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      behavior={Platform.OS === "ios" ? "padding" : "padding"}
       style={styles.kview}
     >
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>

@@ -1,5 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, Alert } from 'react-native';
+import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity, TouchableWithoutFeedback, Keyboard, Alert } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 export default function Registro({navigation}) {
 
@@ -8,10 +9,7 @@ export default function Registro({navigation}) {
       );      
 
   return (
-    <KeyboardAvoidingView
-    behavior={"padding"}
-    style={styles.kview}
-    >
+    <KeyboardAwareScrollView contentContainerStyle={{flex: 1}}>
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
     <View style={styles.container}>
       <Image
@@ -66,7 +64,7 @@ export default function Registro({navigation}) {
       <StatusBar style="auto" />
     </View>
     </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
+    </KeyboardAwareScrollView>
   );
 }
 

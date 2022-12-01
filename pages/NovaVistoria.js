@@ -1,8 +1,42 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Image, TextInput, Pressable, TouchableOpacity, Modal, Animated, TouchableWithoutFeedback, Keyboard } from 'react-native';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import * as ImagePicker from 'expo-image-picker';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
-export default function NovoSMS({navigation}) {
+
+
+export default function NovaVistoria({navigation}) {
+
+  const [hasGalleryPermission, setHasGalleryPermission] = React.useState(null);
+  const [image, setImage] = React.useState(null);
+
+  useEffect(() => {
+    (async() => {
+        const galleryStatus = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        setHasGalleryPermission(galleryStatus.status === 'granted');
+    })();
+  }, []);
+
+  const pickImage = async() => {
+    try {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            quality: 1,
+        });
+    
+        setImage(result.assets[0].uri);
+    
+        if (hasGalleryPermission === false) {
+            return <Text>Sem acesso à galeria interna</Text>
+        }
+      }
+    catch(e) {
+        console.log(e);
+    }
+    }
+
 
   const ModalPopUp = ({visible,children}) => {
     const [showModal, setShowModal] = React.useState(visible)
@@ -44,29 +78,30 @@ export default function NovoSMS({navigation}) {
   const [visible, setVisible] = React.useState(false);
 
   return (
+  <KeyboardAwareScrollView contentContainerStyle={{flex: 1}}>
   <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
     <View style={styles.container}>
       <View style={styles.row}>
         <View style={styles.viewSeta}>
         <Pressable
-        onPress={() => navigation.navigate("EncostAi - Receber SMS")}>
+        onPress={() => navigation.navigate("EncostAi - Vistorias")}>
         <Image
             style={styles.seta}
-            source={require('../assets/seta_sms.png')}
+            source={require('../assets/seta_vistorias.png')}
         />
         </Pressable>
         </View>
         <View style={styles.viewTitle}>
-        <Text style={styles.title}>Novo número</Text>
+        <Text style={styles.title}>Solicitar Vistoria</Text>
         <ModalPopUp visible={visible}>
             <View style={{alignItems: 'center'}}>
                 <View>
                     <Image
-                      source={require("../assets/icon_modal_sms.png")}
+                      source={require("../assets/icon_modal_vistoria.png")}
                       style={styles.modalIcone}
                     />
                 </View>
-                <Text style={styles.modalTexto}>Número cadastrado</Text>
+                <Text style={styles.modalTexto}>Vistoria solicitada</Text>
                 <Text style={styles.modalTexto}>com sucesso!</Text>
                 <TouchableOpacity
                 style={styles.modalOk}
@@ -78,41 +113,52 @@ export default function NovoSMS({navigation}) {
         </ModalPopUp>
         </View>
       </View>
-      <View style={styles.numeros}>
+      <View style={styles.dados}>
       <TextInput
-        placeholderTextColor={"#065B76"}
+        placeholderTextColor={"#DD5521"}
         style={styles.input}
-        placeholder="Número do telefone"
+        placeholder="CPF"
         keyboardType="numeric"
       />
       <TextInput
-        placeholderTextColor={"#065B76"}
+        placeholderTextColor={"#DD5521"}
         style={styles.input}
         placeholder="CEP"
         keyboardType="numeric"
       />
       <TextInput
-        placeholderTextColor={"#065B76"}
+        placeholderTextColor={"#DD5521"}
         style={styles.input}
-        placeholder="Endereço"
+        placeholder="Rua"
         keyboardType="default"
       />
       <TextInput
-        placeholderTextColor={"#065B76"}
+        placeholderTextColor={"#DD5521"}
         style={styles.input}
         placeholder="Bairro"
         keyboardType="default"
       />
+      <TextInput
+        placeholderTextColor={"#DD5521"}
+        style={styles.description}
+        placeholder="Descrição"
+        keyboardType="default"
+      />
+      <View style={{flexDirection: 'row', justifyContent: 'space-around', width: '100%', alignItems: 'center'}}>
+      <Text style={styles.selecionarImg} onPress={() => pickImage()}>Selecionar Imagem</Text>
+      {image && <Image style={styles.imgSelecionada} source={{uri:image}}/>}
+      </View>
       <TouchableOpacity
-      style={styles.cadastrar}
+      style={styles.enviar}
       onPress={() => setVisible(true)}
       underlayColor='#fff'>
-      <Text style={styles.textoCadastrar}>Cadastrar</Text>
+      <Text style={styles.textoEnviar}>Enviar</Text>
       </TouchableOpacity>
       </View>
       <StatusBar style="auto" />
     </View>
     </TouchableWithoutFeedback>
+    </KeyboardAwareScrollView>
   );
 }
 
@@ -147,7 +193,7 @@ const styles = StyleSheet.create({
   modalOk: {
     paddingTop:10,
     paddingBottom:10,
-    backgroundColor:'#0868A2',
+    backgroundColor:'#DD5521',
     borderRadius: 60,
     borderWidth: 1,
     borderColor: '#fff',
@@ -195,7 +241,7 @@ const styles = StyleSheet.create({
     paddingLeft: '8%'
   },
   viewTitle: {
-    paddingRight: '35%',
+    paddingRight: '30.5%',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: '10%'
@@ -216,7 +262,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '16%',
   },
-  numeros: {
+  dados: {
     alignItems: 'center',
     justifyContent: 'flex-start',
     height: '75%',
@@ -226,36 +272,55 @@ const styles = StyleSheet.create({
   },
   input: {
     height: '10%',
-    width: '75%',
+    width: '80%',
     margin: 12,
     borderRadius:10,
     padding: 10,
     backgroundColor: 'rgba(142,142,147,0.22)',
     fontSize: 16,
   },
-  cadastrar: {
+  description: {
+    height: '15%',
+    width: '80%',
+    margin: 12,
+    borderRadius:10,
+    padding: 10,
+    backgroundColor: 'rgba(142,142,147,0.22)',
+    fontSize: 16,
+    paddingBottom: '14%'
+  },
+  selecionarImg: {
+    color: '#DD5521',
+    fontWeight: 'bold',
+    fontSize: 16,
+    marginVertical: '3%',
+  },
+  imgSelecionada: {
+    width: 100,
+    height: 100,
+    left: '10%',
+  },
+  enviar: {
     marginRight:40,
     marginLeft:40,
-    marginTop:15,
     paddingTop:10,
     paddingBottom:10,
-    backgroundColor:'#0868A2',
+    backgroundColor:'#DD5521',
     borderTopStartRadius:0,
-    borderTopEndRadius:25,
-    borderBottomStartRadius:25,
+    borderTopEndRadius:15,
+    borderBottomStartRadius:15,
     borderBottomEndRadius:0,
     borderWidth: 1,
-    borderColor: '#fff',
-    width: '35%',
-    height: '8%',
+    borderColor: '#DD5521',
+    width: '85%',//300,
+    height: '10%',//70,
     justifyContent: 'center',
-    shadowColor: '#303838',
-    shadowOffset: { width: 0, height: 1 },
-    shadowRadius: 5,
-    shadowOpacity: 0.35,
-    marginTop: '8%'
+    shadowOffset: { width: 0, height: 5 },
+    shadowRadius: 8,
+    shadowOpacity: 0.3,
+    marginTop: '2%'
   },
-  textoCadastrar: {
+  textoEnviar: {
     color:'#fff',
     textAlign:'center',
     paddingLeft : 10,

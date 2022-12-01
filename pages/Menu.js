@@ -22,7 +22,7 @@ export default function Menu({navigation}) {
       </TouchableOpacity>
       </View>
       <View style={styles.row}>
-      <TouchableOpacity style={styles.button3}>
+      <TouchableOpacity style={styles.button3} onPress={() => navigation.navigate("EncostAi - Vistorias")}>
         <Image style={styles.imgBtn} source={require("../assets/btn-3.png")}/>
         <Text style={styles.textBtn3}>VISTORIAS</Text>
       </TouchableOpacity>
