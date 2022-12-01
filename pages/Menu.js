@@ -32,7 +32,7 @@ export default function Menu({navigation}) {
       </TouchableOpacity>
       </View>
       <View style={styles.row}>
-      <TouchableOpacity style={styles.button5}>
+      <TouchableOpacity style={styles.button5} onPress={() => navigation.navigate("EncostAi - Meu Perfil")}>
         <Image style={styles.imgBtn} source={require("../assets/btn-5.png")}/>
         <Text style={styles.textBtn5}>MEU PERFIL</Text>
       </TouchableOpacity>
