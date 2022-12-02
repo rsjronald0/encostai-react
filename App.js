@@ -15,6 +15,7 @@ import Vistorias from './pages/Vistorias.js';
 import Vistoria from './pages/Vistoria.js';
 import NovaVistoria from './pages/NovaVistoria.js';
 import Perfil from './pages/Perfil.js';
+import EditarPerfil from './pages/EditarPerfil.js'
 
 const Stack = createStackNavigator();
 
@@ -36,6 +37,7 @@ export default function App() {
       <Stack.Screen name='EncostAi - Receber SMS' component={SMS}/>
       <Stack.Screen name='EncostAi - Novo SMS' component={NovoSMS}/>
       <Stack.Screen name='EncostAi - Meu Perfil' component={Perfil}/>
+      <Stack.Screen name='EncostAi - Editar perfil' component={EditarPerfil}/>
     </Stack.Navigator>
   </NavigationContainer>
   );

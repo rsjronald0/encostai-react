@@ -9,7 +9,7 @@ export default function Perfil({navigation}) {
           <View style={styles.row}>
             <View style={styles.viewSeta}>
             <Pressable
-            onPress={() => navigation.navigate("EncostAi - Meu Perfil")}>
+            onPress={() => navigation.navigate("EncostAi - Menu")}>
             <Image
                 style={styles.seta}
                 source={require('../assets/seta_sms.png')}
@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
         color: '#555555',
         fontWeight: 'bold',
         fontSize: 20,
-        marginBottom: 48,
+        marginBottom: 52,
       },
       seta: {
         zIndex: 10,
@@ -124,14 +124,14 @@ const styles = StyleSheet.create({
         paddingLeft: '9%'
       },
       viewTitle: {
-        paddingRight: '40%',
+        paddingRight: '39%',
         justifyContent: 'center',
         alignItems: 'center',
       },
     cardInfo: {
         display: "flex",
         flexDirection: "row",
-        marginBottom: 42,
+        marginBottom: 52,
         marginRight: 90,
     },
     titleCard: {
@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
     containerBtn: {
         display: "flex",
         flexDirection: "row",
-        marginTop: 72,
+        marginTop: 64,
     },
     editarPerfil: {
         backgroundColor: "#11496E",
