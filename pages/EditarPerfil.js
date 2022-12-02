@@ -1,8 +1,47 @@
-import { StyleSheet, Text, View, Image, TextInput, Pressable, TouchableOpacity, TouchableWithoutFeedback, Keyboard, ScrollView, Linking} from 'react-native';
+import { StyleSheet, Text, View, Image, TextInput, Pressable, TouchableOpacity, Modal, Animated, TouchableWithoutFeedback, Keyboard} from 'react-native';
 import React, { useState } from "react";
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-export default function EditarPerfil({navigation}) { 
+export default function EditarPerfil({navigation}) {
+    
+    const ModalPopUp = ({visible,children}) => {
+        const [showModal, setShowModal] = React.useState(visible)
+    
+        const scaleValue = React.useRef( new Animated.Value(0)).current;
+    
+        React.useEffect(() => {
+            toggleModal();
+        }, [visible]);
+    
+        const toggleModal = () => {
+            if (visible) {
+                setShowModal(true);
+                Animated.spring(scaleValue, {
+                    toValue: 1,
+                    duration: 300,
+                    useNativeDriver: true,
+                }).start();
+            } else {
+                setTimeout(() => setShowModal(false), 200);
+                Animated.timing(scaleValue, {
+                    toValue: 0,
+                    duration: 200,
+                    useNativeDriver: true
+                }).start();
+            }
+        }
+        return (
+        <Modal transparent visible = {showModal}>
+            <View style={styles.modalBackground}>
+                <Animated.View style={[styles.modalContainer, {transform: [{scale:scaleValue}]}]}>
+                    {children}
+                </Animated.View>
+            </View>
+        </Modal>
+        );
+      };
+    
+      const [visible, setVisible] = React.useState(false);
 
     return (
         <View style={styles.container}>
@@ -19,6 +58,24 @@ export default function EditarPerfil({navigation}) {
             <View style={styles.viewTitle}>
             <Text style={styles.title}>Editar meu perfil</Text>
             </View>
+                <ModalPopUp visible={visible}>
+                <View style={{alignItems: 'center'}}>
+                    <View>
+                        <Image
+                        source={require("../assets/icon_modal_sms.png")}
+                        style={styles.modalIcone}
+                        />
+                    </View>
+                    <Text style={styles.modalTexto}>Alterações feitas</Text>
+                    <Text style={styles.modalTexto}>com sucesso!</Text>
+                    <TouchableOpacity
+                    style={styles.modalOk}
+                    onPress={() => setVisible(false)}
+                    underlayColor='#fff'>
+                    <Text style={styles.textoOK}>OK</Text>
+                    </TouchableOpacity>
+                </View>
+                </ModalPopUp>
           </View>
 
             <View>
@@ -91,7 +148,7 @@ export default function EditarPerfil({navigation}) {
             <View style={styles.containerBtn}>
                 <TouchableOpacity
                     style={styles.salvarPerfil}
-                    onPress={() => navigation.navigate("EncostAi - Editar perfil")}
+                    onPress={() => setVisible(true)}
                     underlayColor='#fff'>
                     <Text style={styles.salvar}>Salvar alterações</Text>
                 </TouchableOpacity>
@@ -101,7 +158,54 @@ export default function EditarPerfil({navigation}) {
 
 }
 
-const styles = StyleSheet.create({ 
+const styles = StyleSheet.create({
+    modalBackground: {
+        flex: 1,
+        backgroundColor: "rgba(0,0,0,0.5)",
+        justifyContent: "center",
+        alignContent: 'center',
+      },
+      modalContainer: {
+        width: '80%',
+        backgroundColor: 'white',
+        paddingVertical: 30,
+        paddingHorizontal: 20,
+        borderRadius: 20,
+        elevation: 20,
+        zIndex: 20,
+        justifyContent: 'center',
+        alignSelf: 'center'
+      },
+      modalIcone: {
+        height: 60,
+        width: 66,
+        marginBottom: '5%'
+      },
+      modalTexto: {
+        color: '#000',
+        fontWeight: 'bold',
+        fontSize: 25
+      },
+      modalOk: {
+        paddingTop:10,
+        paddingBottom:10,
+        backgroundColor:'#0868A2',
+        borderRadius: 60,
+        borderWidth: 1,
+        borderColor: '#fff',
+        width: 130,
+        height: 45,
+        justifyContent: 'center',
+        marginTop: '6%'
+      },
+      textoOK: {
+        color:'#fff',
+        textAlign:'center',
+        paddingLeft : 10,
+        paddingRight : 10,
+        fontSize: 20,
+        fontWeight: 'bold',
+      },
     container: {
         flex: 1,
         backgroundColor: '#fff',
