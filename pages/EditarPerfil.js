@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, Image, TextInput, Pressable, TouchableOpacity, Modal, Animated, TouchableWithoutFeedback, Keyboard} from 'react-native';
 import React, { useState } from "react";
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 export default function EditarPerfil({navigation}) {
     
@@ -44,6 +44,8 @@ export default function EditarPerfil({navigation}) {
       const [visible, setVisible] = React.useState(false);
 
     return (
+        <KeyboardAwareScrollView contentContainerStyle={{flex: 1}}>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.container}>
           <View style={styles.row}>
             <View style={styles.viewSeta}>
@@ -154,6 +156,8 @@ export default function EditarPerfil({navigation}) {
                 </TouchableOpacity>
             </View>
         </View>
+        </TouchableWithoutFeedback>
+        </KeyboardAwareScrollView>
       );
 
 }
