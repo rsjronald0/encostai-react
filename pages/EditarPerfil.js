@@ -1,9 +1,57 @@
-import { StyleSheet, Text, View, Image, TextInput, Pressable, TouchableOpacity, Modal, Animated, TouchableWithoutFeedback, Keyboard} from 'react-native';
+import { StyleSheet, Text, View, Image, TextInput, Pressable, TouchableOpacity, Modal, Animated, TouchableWithoutFeedback, Keyboard, Alert} from 'react-native';
 import React, { useState } from "react";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
-export default function EditarPerfil({navigation}) {
+export default function EditarPerfil({navigation, route}) {
     
+    const getDetails = (type) => {
+        if (route.params) {
+          switch (type) {
+            case 'nome':
+              return route.params.nome;
+            case 'email':
+              return route.params.email;
+            case 'numero':
+              return route.params.numero;
+            case 'senha':
+              return route.params.senha;
+          }
+        }
+        return '';
+      };
+
+      const [nome, setNome] = useState(getDetails('nome'));
+      const [email, setEmail] = useState(getDetails('email'));
+      const [numero, setNumero] = useState(getDetails('numero'));
+      const [senha, setSenha] = useState(getDetails('senha'));    
+
+      const updateDetails = () => {
+        fetch(`http://192.168.0.10:3000/user/update/${global.id}`, {
+          method: 'put',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            nome,
+            email,
+            numero,
+            senha,
+            cpf: global.cpf,
+          }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            setVisible(true);
+            global.nome   = nome;
+            global.numero = numero;
+            global.email  = email;
+            global.senha  = senha;
+          })
+          .catch((err) => {
+            Alert.alert('alguma coisa deu errado');
+          });
+      };
+
     const ModalPopUp = ({visible,children}) => {
         const [showModal, setShowModal] = React.useState(visible)
     
@@ -93,6 +141,7 @@ export default function EditarPerfil({navigation}) {
                         style={styles.input}
                         placeholder="Nome"
                         keyboardType="default"
+                        onChangeText={(text) => setNome(text)}
                         />
                     </View>
                 </View>
@@ -109,6 +158,7 @@ export default function EditarPerfil({navigation}) {
                         style={styles.input}
                         placeholder="Celular"
                         keyboardType="numeric"
+                        onChangeText={(text) => setNumero(text)}
                         />
                     </View>
                 </View>
@@ -125,6 +175,7 @@ export default function EditarPerfil({navigation}) {
                         style={styles.input}
                         placeholder="Email"
                         keyboardType="email-address"
+                        onChangeText={(text) => setEmail(text)}
                         />
                     </View>
                 </View>
@@ -142,6 +193,7 @@ export default function EditarPerfil({navigation}) {
                         placeholder="Senha"
                         keyboardType="default"
                         secureTextEntry={true}
+                        onChangeText={(text) => setSenha(text)}
                         />
                     </View>
                 </View>
@@ -150,7 +202,7 @@ export default function EditarPerfil({navigation}) {
             <View style={styles.containerBtn}>
                 <TouchableOpacity
                     style={styles.salvarPerfil}
-                    onPress={() => setVisible(true)}
+                    onPress={() => updateDetails()}
                     underlayColor='#fff'>
                     <Text style={styles.salvar}>Salvar alterações</Text>
                 </TouchableOpacity>

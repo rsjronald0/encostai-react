@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Perfil({navigation}) { 
-
     return (
         <View style={styles.container}>
           <View style={styles.row}>
@@ -29,7 +28,7 @@ export default function Perfil({navigation}) {
                         />
                     <View>
                         <Text style={styles.titleCard}>Nome</Text>
-                        <Text style={styles.sbTitleCard}>Maria José da Silva</Text>
+                        <Text style={styles.sbTitleCard}>{global.nome}</Text>
                     </View>
                 </View>
 
@@ -40,7 +39,7 @@ export default function Perfil({navigation}) {
                         />
                     <View>
                         <Text style={styles.titleCard}>CPF</Text>
-                        <Text style={styles.sbTitleCard}>000.000.000-00</Text>
+                        <Text style={styles.sbTitleCard}>{global.cpf}</Text>
                     </View>
                 </View>
 
@@ -51,7 +50,7 @@ export default function Perfil({navigation}) {
                         />
                     <View>
                         <Text style={styles.titleCard}>Celular</Text>
-                        <Text style={styles.sbTitleCard}>(81) 99999-9999</Text>
+                        <Text style={styles.sbTitleCard}>{global.numero}</Text>
                     </View>
                 </View>
 
@@ -62,7 +61,7 @@ export default function Perfil({navigation}) {
                         />
                     <View>
                         <Text style={styles.titleCard}>E-mail</Text>
-                        <Text style={styles.sbTitleCard}>mariajose@gmail.com</Text>
+                        <Text style={styles.sbTitleCard}>{global.email}</Text>
                     </View>
                 </View>
 
