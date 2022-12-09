@@ -16,12 +16,16 @@ import Vistoria from './pages/Vistoria.js';
 import NovaVistoria from './pages/NovaVistoria.js';
 import Perfil from './pages/Perfil.js';
 import EditarPerfil from './pages/EditarPerfil.js'
+import { Provider } from 'react-redux';
+import { reducer } from './reducers/reducer';
+import { createStore } from 'redux';
+
+const store = createStore(reducer);
 
 const Stack = createStackNavigator();
 
-export default function App() {
+function App() {
   return (
-    <NavigationContainer>
     <Stack.Navigator screenOptions={{headerShown: false,}} initialRouteName='Index'>
       <Stack.Screen name='EncostAi - Login' component={Index}/>
       <Stack.Screen name='EncostAi - Registro' component={Registro}/>
@@ -39,6 +43,15 @@ export default function App() {
       <Stack.Screen name='EncostAi - Meu Perfil' component={Perfil}/>
       <Stack.Screen name='EncostAi - Editar perfil' component={EditarPerfil}/>
     </Stack.Navigator>
-  </NavigationContainer>
   );
 }
+
+export default () => {
+  return (
+    <Provider store={store}>
+      <NavigationContainer>
+        <App />
+      </NavigationContainer>
+    </Provider>
+  );
+};

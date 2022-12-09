@@ -41,7 +41,7 @@ export default function Index({navigation, route}) {
     for (const u of users) {
       if (u.cpf == cpf && u.senha == senha) {
         erro = false;
-        global.id     = u.id;
+        global.id     = u._id;
         global.nome   = u.nome;
         global.cpf    = u.cpf;
         global.numero = u.numero;

@@ -1,12 +1,34 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Image, TextInput, Pressable, TouchableOpacity, Modal, Animated, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { StyleSheet, Text, View, Image, TextInput, Pressable, TouchableOpacity, Modal, Animated, TouchableWithoutFeedback, Keyboard, Alert } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 
 
-export default function NovaVistoria({navigation}) {
+export default function NovaVistoria({navigation, route}) {
+
+  const handleUpload = async (image) => {
+    const data = new FormData();
+    data.append('file', image);
+    data.append('upload_preset', 'qwyetusc');
+    data.append('cloud_name', 'do4495drx');
+    let result;
+
+    await fetch('https://api.cloudinary.com/v1_1/do4495drx/image/upload', {
+      method: 'post',
+      body: data,
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        result = data.url
+      })
+      .catch((err) => {
+        Alert.alert('erro durante o upload');
+      });
+    
+    return result;
+  };
 
   const [hasGalleryPermission, setHasGalleryPermission] = React.useState(null);
   const [image, setImage] = React.useState(null);
@@ -26,7 +48,13 @@ export default function NovaVistoria({navigation}) {
             quality: 1,
         });
     
-        setImage(result.assets[0].uri);
+        let newFile = {
+          uri: result.assets[0].uri,
+          type: `test/${result.assets[0].uri.split('.')[1]}`,
+          name: `test.${result.assets[0].uri.split('.')[1]}`,
+        }
+
+        setImage(newFile);
     
         if (hasGalleryPermission === false) {
             return <Text>Sem acesso à galeria interna</Text>
@@ -77,6 +105,84 @@ export default function NovaVistoria({navigation}) {
 
   const [visible, setVisible] = React.useState(false);
 
+  const getDetails = (type) => {
+    if (route.params) {
+      switch (type) {
+        case 'cpf':
+          return route.params.cpf;
+        case 'cep':
+          return route.params.cep;
+        case 'rua':
+          return route.params.rua;
+        case 'bairro':
+          return route.params.bairro;
+        case 'descricao':
+          return route.params.descricao;
+      }
+    }
+    return '';
+  };
+
+  const [cep, setCep] = useState(getDetails('cep'));
+  const [rua, setRua] = useState(getDetails('rua'));
+  const [bairro, setBairro] = useState(getDetails('bairro'));
+  const [descricao, setDescricao] = useState(getDetails('descricao'));    
+
+  const submitData = async () => {
+    const numero_solicitacao = vistCode();
+    const data_abertura = getDate();
+    const imagem = await handleUpload(image);
+    fetch('http://192.168.0.10:3000/vistoria/add', {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        imagem,
+        rua,
+        descricao,
+        numero_solicitacao,
+        data_abertura,
+        cep,
+        status: 'Pendente',
+        id_usuario: global.id,
+        bairro
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+      })
+      .catch((err) => {
+        Alert.alert('Alguma coisa deu errado' + err);
+      });
+  };
+
+  const getDate = () => {
+    var temp = new Date();
+    var dateStr = padStr(temp.getDate()) + '/' +
+                  padStr(1 + temp.getMonth()) + '/' +
+                  padStr(temp.getFullYear())
+    return dateStr;
+  }
+
+  const vistCode = () => {
+    let prefix = 'VIS'
+    let numeros = [];
+    for (let i = 0; i < 10; i++) {
+      numeros[i] = Math.floor(Math.random() * 10);
+    }
+
+    for (let n of numeros) {
+      prefix = prefix.concat(n);
+    }
+
+    return prefix;
+  }
+
+  function padStr(i) {
+    return (i < 10) ? "0" + i : "" + i;
+}
+
   return (
   <KeyboardAwareScrollView contentContainerStyle={{flex: 1}}>
   <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -125,32 +231,36 @@ export default function NovaVistoria({navigation}) {
         style={styles.input}
         placeholder="CEP"
         keyboardType="numeric"
+        onChangeText={(text) => setCep(text)}
       />
       <TextInput
         placeholderTextColor={"#DD5521"}
         style={styles.input}
         placeholder="Rua"
         keyboardType="default"
+        onChangeText={(text) => setRua(text)}
       />
       <TextInput
         placeholderTextColor={"#DD5521"}
         style={styles.input}
         placeholder="Bairro"
         keyboardType="default"
+        onChangeText={(text) => setBairro(text)}
       />
       <TextInput
         placeholderTextColor={"#DD5521"}
         style={styles.description}
         placeholder="Descrição"
         keyboardType="default"
+        onChangeText={(text) => setDescricao(text)}
       />
       <View style={{flexDirection: 'row', justifyContent: 'space-around', width: '100%', alignItems: 'center'}}>
       <Text style={styles.selecionarImg} onPress={() => pickImage()}>Selecionar Imagem</Text>
-      {image && <Image style={styles.imgSelecionada} source={{uri:image}}/>}
+      {image && <Image style={styles.imgSelecionada} source={{uri:image.uri}}/>}
       </View>
       <TouchableOpacity
       style={styles.enviar}
-      onPress={() => setVisible(true)}
+      onPress={() => {submitData();setVisible(true)}}
       underlayColor='#fff'>
       <Text style={styles.textoEnviar}>Enviar</Text>
       </TouchableOpacity>

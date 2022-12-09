@@ -1,13 +1,30 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Image, Pressable, TouchableOpacity } from 'react-native';
 
-export default function Vistoria({navigation}) {
+export default function Vistoria(props) {
+
+  const { _id, imagem, rua, descricao, numero_solicitacao, data_abertura, status, bairro } = props.route.params.item
+
+  const getImg = (imagem) => {
+      if (!imagem || imagem == null || imagem == 'undefined' || imagem == '') {
+        return (
+          <Text style={styles.info}>Nenhuma imagem anexada.</Text>
+        )
+      }
+      else {
+        return (
+          imagem && <Image style={{width: 250, height: 200, marginBottom: '6%'}} source={{uri:imagem}}/>
+        )
+      }
+  }
+
+
   return (
     <View style={styles.container}>
       <View style={styles.row}>
         <View style={styles.viewSeta}>
         <Pressable
-        onPress={() => navigation.navigate("EncostAi - Vistorias")}>
+        onPress={() => props.navigation.navigate("EncostAi - Vistorias")}>
         <Image
             style={styles.seta}
             source={require('../assets/seta_vistorias.png')}
@@ -15,22 +32,22 @@ export default function Vistoria({navigation}) {
         </Pressable>
         </View>
         <View style={styles.viewTitle}>
-        <Text style={styles.title}>{global.codigo}</Text>
+        <Text style={styles.title}>{numero_solicitacao}</Text>
         </View>
       </View>
       <View style={styles.dados}>
       <Text style={styles.header}>Data de abertura</Text>
-      <Text style={styles.info}>{global.data}</Text>
+      <Text style={styles.info}>{data_abertura}</Text>
       <Text style={styles.header}>Rua</Text>
-      <Text style={styles.info}>{global.rua}</Text>
+      <Text style={styles.info}>{rua}</Text>
       <Text style={styles.header}>Bairro</Text>
-      <Text style={styles.info}>{global.bairro}</Text>
+      <Text style={styles.info}>{bairro}</Text>
       <Text style={styles.header}>Descrição</Text>
-      <Text style={styles.info}>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc nulla nisl, facilisis ut ligula sed, ultricies feugiat elit. Cras sit.</Text>
+      <Text style={styles.info}>{descricao}</Text>
       <Text style={styles.header}>Foto do local</Text>
-      <Text style={styles.info}>Nenhuma imagem anexada.</Text>
+      {getImg(imagem)}
       <Text style={styles.header}>Status</Text>
-      <Text style={styles.info}>{global.vistStatus}</Text>
+      <Text style={styles.info}>{status}</Text>
       </View>
       <StatusBar style="auto" />
     </View>

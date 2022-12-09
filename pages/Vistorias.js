@@ -1,7 +1,55 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Image, Pressable, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Image, Pressable, TouchableOpacity, Alert, FlatList } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 
 export default function Vistorias({navigation}) {
+
+  const dispatch = useDispatch();
+  const { data, loading } = useSelector((state) => {
+    return state;
+  });
+
+
+  const fetchData = () => {
+    fetch('http://192.168.0.10:3000/vistoria/')
+      .then((res) => res.json())
+      .then((results) => {
+        results = results.vistorias;
+        let userRes = [];
+        for (let r of results) {
+          if (r.id_usuario == global.id) {
+            userRes.push(r)
+          }
+        }
+        dispatch({ type: 'ADD_DATA', payload: userRes });
+        dispatch({ type: 'SET_LOADING', payload: false });
+      })
+      .catch((err) => {
+        Alert.alert('someting went wrong');
+      });
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [data]);
+
+  const renderList = (item) => {
+    return (
+      <TouchableOpacity style={styles.vistoriaPendente} onPress={() => {navigation.navigate("EncostAi - Vistoria", { item })}}>
+        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+        <Text style={styles.codigo}>{item.numero_solicitacao}</Text>
+        <Text style={styles.data}>{item.data_abertura}</Text>
+        </View>
+        <Text style={styles.endereco}>{item.rua}</Text>
+        <View style={{flexDirection: 'row'}}>
+        <Text style={styles.bairro}>{item.bairro}</Text>
+        <Text style={styles.status}> - Pendente</Text>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.row}>
@@ -19,7 +67,21 @@ export default function Vistorias({navigation}) {
         </View>
       </View>
       <View style={styles.vistorias}>
-      <TouchableOpacity style={styles.vistoriaPendente} onPress={() => {global.codigo = 'VIS0034203942'; global.data = '12/07/2022'; global.rua = 'Rua Divisópolis, Alto do Capitão'; global.bairro = 'Dois Unidos'; global.vistStatus='Pendente'; navigation.navigate("EncostAi - Vistoria")}}>
+      <View style={{height: '70%', justifyContent: 'center', alignItems: 'center', alignSelf: 'center', width: '100%'}}>
+      <FlatList
+        data={data}
+        style={{width: '90%', height: '100%'}}
+        contentContainerStyle={{alignItems: 'center'}}
+        renderItem={({ item }) => {
+          return renderList(item);
+        }}
+        keyExtractor={(item) => item._id}
+        onRefresh={() => fetchData()}
+        refreshing={loading}
+        removeClippedSubviews={false}
+      />
+      </View>
+      {/* <TouchableOpacity style={styles.vistoriaPendente} onPress={() => {global.codigo = 'VIS0034203942'; global.data = '12/07/2022'; global.rua = 'Rua Divisópolis, Alto do Capitão'; global.bairro = 'Dois Unidos'; global.vistStatus='Pendente'; navigation.navigate("EncostAi - Vistoria")}}>
         <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
         <Text style={styles.codigo}>VIS0034203942</Text>
         <Text style={styles.data}>12/07/2022</Text>
@@ -51,7 +113,7 @@ export default function Vistorias({navigation}) {
         <Text style={styles.bairro}>Dois Unidos</Text>
         <Text style={styles.status}> - Concluída</Text>
         </View>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
       <TouchableOpacity
           style={styles.adicionar}
           onPress={() => navigation.navigate("EncostAi - Nova Vistoria")}
@@ -120,10 +182,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderTopColor: '#DD5521',
     borderTopWidth: 10,
-    marginHorizontal: 15,
-    marginVertical: 12,
-    width: '95%',
-    height: '17%',
+    width: 320,
+    height: 110,
+    marginBottom: 30,
   },
   vistoriaAnalise: {
     backgroundColor: '#fff',
@@ -161,7 +222,8 @@ const styles = StyleSheet.create({
     color: '#555555',
     fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: '3%'
+    marginBottom: '3%',
+    marginRight: '20%'
   },
   data: {
     color: '#555555',
