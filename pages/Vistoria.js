@@ -27,7 +27,6 @@ export default function Vistoria(props) {
       [
         {
           text: "CANCELAR",
-          // onPress: () => console.log("Cancel Pressed"),
           style: "cancel"
         },
         { text: "SIM", onPress: async () => await excluirVistoria() }

@@ -1,8 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Image, TextInput, Pressable, TouchableOpacity, Modal, Animated, TouchableWithoutFeedback, Keyboard } from 'react-native';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
-export default function NovoSMS({navigation}) {
+export default function NovoSMS({navigation, route}) {
 
   const ModalPopUp = ({visible,children}) => {
     const [showModal, setShowModal] = React.useState(visible)
@@ -43,6 +43,46 @@ export default function NovoSMS({navigation}) {
 
   const [visible, setVisible] = React.useState(false);
 
+  const submitData = async () => {
+    fetch('http://192.168.0.10:3000/sms/add', {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        numero,
+        endereco,
+        bairro,
+        id_usuario: global.id,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+      })
+      .catch((err) => {
+        Alert.alert('Alguma coisa deu errado' + err);
+      });
+  };
+
+  const getDetails = (type) => {
+    if (route.params) {
+      switch (type) {
+        case 'numero':
+          return route.params.cpf;
+        case 'endereco':
+          return route.params.rua;
+        case 'bairro':
+          return route.params.bairro;
+      }
+    }
+    return '';
+  };
+
+  const [numero, setNumero] = useState(getDetails('numero'));
+  const [cep, setCep] = useState(getDetails('cep'));
+  const [endereco, setEndereco] = useState(getDetails('endereco'));
+  const [bairro, setBairro] = useState(getDetails('bairro'));
+
   return (
   <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
     <View style={styles.container}>
@@ -70,7 +110,7 @@ export default function NovoSMS({navigation}) {
                 <Text style={styles.modalTexto}>com sucesso!</Text>
                 <TouchableOpacity
                 style={styles.modalOk}
-                onPress={() => setVisible(false)}
+                onPress={() => {setVisible(false); navigation.navigate("EncostAi - Receber SMS")}}
                 underlayColor='#fff'>
                 <Text style={styles.textoOK}>OK</Text>
                 </TouchableOpacity>
@@ -84,28 +124,32 @@ export default function NovoSMS({navigation}) {
         style={styles.input}
         placeholder="Número do telefone"
         keyboardType="numeric"
+        onChangeText={(text) => setNumero(text)}
       />
       <TextInput
         placeholderTextColor={"#065B76"}
         style={styles.input}
         placeholder="CEP"
         keyboardType="numeric"
+        onChangeText={(text) => setCep(text)}
       />
       <TextInput
         placeholderTextColor={"#065B76"}
         style={styles.input}
         placeholder="Endereço"
         keyboardType="default"
+        onChangeText={(text) => setEndereco(text)}
       />
       <TextInput
         placeholderTextColor={"#065B76"}
         style={styles.input}
         placeholder="Bairro"
         keyboardType="default"
+        onChangeText={(text) => setBairro(text)}
       />
       <TouchableOpacity
       style={styles.cadastrar}
-      onPress={() => setVisible(true)}
+      onPress={() => {submitData();setVisible(true)}}
       underlayColor='#fff'>
       <Text style={styles.textoCadastrar}>Cadastrar</Text>
       </TouchableOpacity>

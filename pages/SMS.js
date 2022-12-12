@@ -1,7 +1,50 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Image, Pressable, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Image, Pressable, TouchableOpacity, FlatList } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 
 export default function SMS({navigation}) {
+
+  const dispatch = useDispatch();
+  const { data, loading } = useSelector((state) => {
+    return state;
+  });
+
+  const renderList = (item) => {
+    const ender = `${item.endereco} - ${item.bairro}`
+    return (
+      <TouchableOpacity style={styles.contato} activeOpacity={1}>
+      <Text style={styles.numero}>{item.numero}</Text>
+      <Text style={styles.endereco}>{ender}</Text>
+      <Text style={styles.status}>Número validado</Text>
+    </TouchableOpacity>
+    );
+  };
+
+  const fetchData = () => {
+    fetch('http://192.168.0.10:3000/sms/')
+      .then((res) => res.json())
+      .then((results) => {
+        results = results.sms;
+        let userRes = [];
+        for (let r of results) {
+          if (r.id_usuario == global.id) {
+            userRes.push(r)
+          }
+        }
+        dispatch({ type: 'ADD_DATA', payload: userRes });
+        dispatch({ type: 'SET_LOADING', payload: false });
+      })
+      .catch((err) => {
+        Alert.alert('someting went wrong');
+      });
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [data]);
+
+
   return (
     <View style={styles.container}>
       <View style={styles.row}>
@@ -19,7 +62,21 @@ export default function SMS({navigation}) {
         </View>
       </View>
       <View style={styles.numeros}>
-      <TouchableOpacity style={styles.contato}>
+      <View style={{height: '70%', justifyContent: 'center', alignItems: 'center', alignSelf: 'center', width: '100%'}}>
+      <FlatList
+        data={data}
+        style={{width: '90%', height: '100%'}}
+        contentContainerStyle={{alignItems: 'center'}}
+        renderItem={({ item }) => {
+          return renderList(item);
+        }}
+        keyExtractor={(item) => item._id}
+        onRefresh={() => fetchData()}
+        refreshing={loading}
+        removeClippedSubviews={false}
+      />
+      </View>
+      {/* <TouchableOpacity style={styles.contato}>
         <Text style={styles.numero}>(81)98555-4432</Text>
         <Text style={styles.endereco}>Rua Divisópolis, Alto do Capitão - Dois Unidos</Text>
         <Text style={styles.status}>Número validado</Text>
@@ -28,7 +85,7 @@ export default function SMS({navigation}) {
         <Text style={styles.numero}>(81)98405-6522</Text>
         <Text style={styles.endereco}>Rua Elias Gomes, Pina - Recife</Text>
         <Text style={styles.status}>Número validado</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
       <Text style={styles.adicionar} onPress={() => navigation.navigate("EncostAi - Novo SMS")}>Adicionar novo número</Text>
       </View>
       <StatusBar style="auto" />
@@ -86,8 +143,8 @@ const styles = StyleSheet.create({
     borderTopWidth: 10,
     marginHorizontal: 15,
     marginVertical: 12,
-    width: '100%',
-    height: '16%',
+    width: 320,
+    height: 100,
   },
   numeros: {
     alignItems: 'center',
