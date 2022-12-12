@@ -14,6 +14,7 @@ import NovoSMS from './pages/NovoSMS.js';
 import Vistorias from './pages/Vistorias.js';
 import Vistoria from './pages/Vistoria.js';
 import NovaVistoria from './pages/NovaVistoria.js';
+import EditarVistoria from './pages/EditarVistoria.js';
 import Perfil from './pages/Perfil.js';
 import EditarPerfil from './pages/EditarPerfil.js'
 import { Provider } from 'react-redux';
@@ -37,6 +38,7 @@ function App() {
       <Stack.Screen name='EncostAi - Vistorias' component={Vistorias}/>
       <Stack.Screen name='EncostAi - Vistoria' component={Vistoria}/>
       <Stack.Screen name='EncostAi - Nova Vistoria' component={NovaVistoria}/>
+      <Stack.Screen name='EncostAi - Editar Vistoria' component={EditarVistoria}/>
       <Stack.Screen name='EncostAi - Abrigos' component={Abrigos}/>
       <Stack.Screen name='EncostAi - Receber SMS' component={SMS}/>
       <Stack.Screen name='EncostAi - Novo SMS' component={NovoSMS}/>

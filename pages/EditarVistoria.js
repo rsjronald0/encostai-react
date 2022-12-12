@@ -4,9 +4,9 @@ import React, { useState, useEffect } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
+export default function EditarVistoria(props) {
 
-
-export default function NovaVistoria({navigation, route}) {
+  const { _id, imagem, rua: vistRua, descricao: vistDesc, numero_solicitacao, data_abertura, status, bairro: vistBairro, cep: vistCep, cpf: vistCpf } = props.route.params.item;
 
   const handleUpload = async (image) => {
     const data = new FormData();
@@ -32,6 +32,15 @@ export default function NovaVistoria({navigation, route}) {
 
   const [hasGalleryPermission, setHasGalleryPermission] = React.useState(null);
   const [image, setImage] = React.useState(null);
+
+  const useImage = () => {
+    if (image == null || image == 'undefined' || !image) {
+        if (imagem != null && imagem && imagem != 'undefined') return (<Image style={styles.imgSelecionada} source={{uri:imagem}}/>)
+    }
+    else {
+        return <Image style={styles.imgSelecionada} source={{uri:image.uri}}/>
+    }
+  }
 
   useEffect(() => {
     (async() => {
@@ -105,41 +114,32 @@ export default function NovaVistoria({navigation, route}) {
 
   const [visible, setVisible] = React.useState(false);
 
-  const getDetails = (type) => {
-    if (route.params) {
-      switch (type) {
-        case 'cpf':
-          return route.params.cpf;
-        case 'cep':
-          return route.params.cep;
-        case 'rua':
-          return route.params.rua;
-        case 'bairro':
-          return route.params.bairro;
-        case 'descricao':
-          return route.params.descricao;
-      }
-    }
-    return '';
-  };
 
-  const [cpf, setCpf] = useState(getDetails('cpf'));
-  const [cep, setCep] = useState(getDetails('cep'));
-  const [rua, setRua] = useState(getDetails('rua'));
-  const [bairro, setBairro] = useState(getDetails('bairro'));
-  const [descricao, setDescricao] = useState(getDetails('descricao'));    
+  const [cep, setCep] = useState(vistCep);
+  const [rua, setRua] = useState(vistRua);
+  const [bairro, setBairro] = useState(vistBairro);
+  const [descricao, setDescricao] = useState(vistDesc);
 
   const submitData = async () => {
-    const numero_solicitacao = vistCode();
     const data_abertura = getDate();
+    let img;
+    if (imagem && !image) {
+        img = imagem;
+    }
+    else if ((imagem && image) || (!imagem && image)) {
+        img = await handleUpload(image);
+    }
+    else if (!imagem && !image) {
+        img = null;
+    }
     const imagem = await handleUpload(image);
-    fetch('http://192.168.0.10:3000/vistoria/add', {
-      method: 'post',
+    fetch(`http://192.168.0.10:3000/vistoria/update/${_id}`, {
+      method: 'put',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        imagem,
+        imagem: img,
         rua,
         descricao,
         numero_solicitacao,
@@ -147,8 +147,7 @@ export default function NovaVistoria({navigation, route}) {
         cep,
         status: 'Pendente',
         id_usuario: global.id,
-        bairro,
-        cpf
+        bairro
       }),
     })
       .then((res) => res.json())
@@ -167,20 +166,6 @@ export default function NovaVistoria({navigation, route}) {
     return dateStr;
   }
 
-  const vistCode = () => {
-    let prefix = 'VIS'
-    let numeros = [];
-    for (let i = 0; i < 10; i++) {
-      numeros[i] = Math.floor(Math.random() * 10);
-    }
-
-    for (let n of numeros) {
-      prefix = prefix.concat(n);
-    }
-
-    return prefix;
-  }
-
   function padStr(i) {
     return (i < 10) ? "0" + i : "" + i;
 }
@@ -192,7 +177,7 @@ export default function NovaVistoria({navigation, route}) {
       <View style={styles.row}>
         <View style={styles.viewSeta}>
         <Pressable
-        onPress={() => navigation.navigate("EncostAi - Vistorias")}>
+        onPress={() => props.navigation.navigate("EncostAi - Vistorias")}>
         <Image
             style={styles.seta}
             source={require('../assets/seta_vistorias.png')}
@@ -200,7 +185,7 @@ export default function NovaVistoria({navigation, route}) {
         </Pressable>
         </View>
         <View style={styles.viewTitle}>
-        <Text style={styles.title}>Solicitar Vistoria</Text>
+        <Text style={styles.title}>Editar Vistoria</Text>
         <ModalPopUp visible={visible}>
             <View style={{alignItems: 'center'}}>
                 <View>
@@ -209,11 +194,11 @@ export default function NovaVistoria({navigation, route}) {
                       style={styles.modalIcone}
                     />
                 </View>
-                <Text style={styles.modalTexto}>Vistoria solicitada</Text>
+                <Text style={styles.modalTexto}>Vistoria editada</Text>
                 <Text style={styles.modalTexto}>com sucesso!</Text>
                 <TouchableOpacity
                 style={styles.modalOk}
-                onPress={() => {setVisible(false); navigation.navigate("EncostAi - Vistorias")}}
+                onPress={() => {setVisible(false); props.navigation.navigate("EncostAi - Vistorias")}}
                 underlayColor='#fff'>
                 <Text style={styles.textoOK}>OK</Text>
                 </TouchableOpacity>
@@ -227,7 +212,7 @@ export default function NovaVistoria({navigation, route}) {
         style={styles.input}
         placeholder="CPF"
         keyboardType="numeric"
-        onChangeText={(text) => setCpf(text)}
+        defaultValue={vistCpf}
       />
       <TextInput
         placeholderTextColor={"#DD5521"}
@@ -235,6 +220,7 @@ export default function NovaVistoria({navigation, route}) {
         placeholder="CEP"
         keyboardType="numeric"
         onChangeText={(text) => setCep(text)}
+        defaultValue={vistCep}
       />
       <TextInput
         placeholderTextColor={"#DD5521"}
@@ -242,6 +228,7 @@ export default function NovaVistoria({navigation, route}) {
         placeholder="Rua"
         keyboardType="default"
         onChangeText={(text) => setRua(text)}
+        defaultValue={vistRua}
       />
       <TextInput
         placeholderTextColor={"#DD5521"}
@@ -249,6 +236,7 @@ export default function NovaVistoria({navigation, route}) {
         placeholder="Bairro"
         keyboardType="default"
         onChangeText={(text) => setBairro(text)}
+        defaultValue={vistBairro}
       />
       <TextInput
         placeholderTextColor={"#DD5521"}
@@ -256,16 +244,17 @@ export default function NovaVistoria({navigation, route}) {
         placeholder="Descrição"
         keyboardType="default"
         onChangeText={(text) => setDescricao(text)}
+        defaultValue={vistDesc}
       />
       <View style={{flexDirection: 'row', justifyContent: 'space-around', width: '100%', alignItems: 'center'}}>
       <Text style={styles.selecionarImg} onPress={() => pickImage()}>Selecionar Imagem</Text>
-      {image && <Image style={styles.imgSelecionada} source={{uri:image.uri}}/>}
+      {useImage()}
       </View>
       <TouchableOpacity
       style={styles.enviar}
       onPress={() => {submitData();setVisible(true)}}
       underlayColor='#fff'>
-      <Text style={styles.textoEnviar}>Enviar</Text>
+      <Text style={styles.textoEnviar}>Editar</Text>
       </TouchableOpacity>
       </View>
       <StatusBar style="auto" />
@@ -354,7 +343,7 @@ const styles = StyleSheet.create({
     paddingLeft: '8%'
   },
   viewTitle: {
-    paddingRight: '30.5%',
+    paddingRight: '34.5%',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: '10%'
