@@ -145,7 +145,7 @@ export default function EditarVistoria(props) {
         numero_solicitacao,
         data_abertura,
         cep,
-        status: 'Pendente',
+        status,
         id_usuario: global.id,
         bairro
       }),
